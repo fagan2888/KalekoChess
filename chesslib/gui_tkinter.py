@@ -138,7 +138,7 @@ class BoardGuiTk(tk.Frame):
         for coord, piece in self.chessboard.iteritems():
             x,y = self.chessboard.number_notation(coord)
             if piece is not None:
-                filename = "img/%s%s.png" % (piece.color, piece.abbriviation.lower())
+                filename = "img/%s%s.gif" % (piece.color, piece.abbriviation.lower())
                 piecename = "%s%s%s" % (piece.abbriviation, x, y)
 
                 if(filename not in self.icons):
