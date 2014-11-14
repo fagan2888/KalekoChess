@@ -19,7 +19,7 @@ class Example(Frame):
         self.parent.title("Test Canvas")        
         self.pack(fill=BOTH, expand=1)
         
-        self.img = Image.open("img/blackp.gif")
+        self.img = Image.open("../img/blackp.gif")
         self.photo = ImageTk.PhotoImage(self.img)
 
         #kaleko
