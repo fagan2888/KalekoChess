@@ -1,0 +1,9 @@
+The opening repertoire is saved in terms of FEN strings.
+Each FEN string has an associated "nextmove" object with it.
+There will be a dict of { "FEN_STRING" : "nextmove" }
+The nextmove object should contain a string "move", and a string "comments"
+(nextmove.move, nextmove.comments)
+
+There will be a function to read in a text file repertoire into this dict.
+There will be a function to append to the dict.
+There will be a function to write the dict to a text file.

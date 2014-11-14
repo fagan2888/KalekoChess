@@ -1,0 +1,8 @@
+* Opening repertoire database
+  * Function to read in txt file and save to dict
+  * Function to add to dict
+  * Function to save dict to text file
+  * "Opening Repertoire mode" where each time a move is entered, it spits text out
+    	     saying my suggested next move, and comments.
+
+* Ability to flip board (ask user if he is playing white or black)
