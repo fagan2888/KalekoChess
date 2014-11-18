@@ -52,6 +52,14 @@ class BoardGuiTk(tk.Frame):
         self.button_quit.pack(side=tk.RIGHT, in_=self.statusbar)
         self.statusbar.pack(expand=False, fill="x", side='bottom')
 
+        self.button_checkrep = tk.Button(self.statusbar, text="Check Opening Repertoire", fg="black", command=self.chessboard._print_repertoire_info)
+        self.button_checkrep.pack(side=tk.RIGHT, in_=self.statusbar)
+
+        self.button_flip = tk.Button(self.statusbar, text="Flip Board", fg="black", command=self.flipboard)
+        self.button_flip.pack(side=tk.LEFT, in_=self.statusbar)
+                            
+        
+        
 
     def click(self, event):
 
@@ -99,6 +107,8 @@ class BoardGuiTk(tk.Frame):
         self.placepiece(name, row, column)
 
     def placepiece(self, name, row, column):
+#        print "in placepiece, FEN is %s" % self.chessboard.export()
+
         '''Place a piece at the given row/column'''
         self.pieces[name] = (row, column)
         x0 = (column * self.square_size) + int(self.square_size/2)
@@ -152,6 +162,9 @@ class BoardGuiTk(tk.Frame):
         self.refresh()
         self.draw_pieces()
         self.refresh()
+
+    def flipboard(self):
+        print "flip board needs to be implemented here."
 
 def display(chessboard):
     root = tk.Tk()
