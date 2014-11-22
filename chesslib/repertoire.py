@@ -10,7 +10,7 @@
 
 
 
-
+import os
 
 #Here's the repertoire dictionary (global)
 repertoire = {}
@@ -20,14 +20,15 @@ class Repertoire():
     #Repertoire dictionary:
     #Key is FEN string, element is tuple that holds (the next move, the comments)
     def __init__(self):
-        print "init function of Repertoire()"
-        #pass
+        self.hasLoadedDict = False
         #self.BuildDictFromFile(self)
         #self.PrintDict(repertoire)
 
     def SearchDict(self,fenstring):
 #        print "DEBUG: Searching dictionary for ",fenstring        
-        
+        if not self.hasLoadedDict:
+            print "WARNING! You're searching through a repertoire that hasn't been loaded from a file. Try using the \"Load Repertoire\" button."
+
         default = ("DNE","DNE")
         return repertoire.get(fenstring,default)
 
@@ -44,7 +45,7 @@ class Repertoire():
             print "Dictionary['%s'] = %s" % (key,dictionary[key])
         print "\n------------------------------------------\n"
     
-    def BuildDictFromFile(self,filename="saved_repertoires/test_rep.txt"):
+    def BuildDictFromFile(self,filename):
         try:
             #Read in the file
             with open(filename,'r') as f:
@@ -60,10 +61,12 @@ class Repertoire():
             
             #Add this line's information to the dictionary
             self.AddToDict(myfen,mynextmove,mycomments)
+        
+        self.hasLoadedDict = True
 
         return repertoire
 
-    def SaveDictToFile(self,filename="saved_repertoires/test_rep_saved.txt"):
+    def SaveDictToFile(self,filename):
         outf = open(filename,'w')
         for k in repertoire:
             outf.write("%s|%s|%s\n"%(k,repertoire[k][0],repertoire[k][1]))

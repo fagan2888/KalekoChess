@@ -24,7 +24,7 @@ class BoardGuiTk(tk.Frame):
 
     rows = 8
     columns = 8
-
+    
     @property
     def canvas_size(self):
         return (self.columns * self.square_size,
@@ -36,6 +36,9 @@ class BoardGuiTk(tk.Frame):
         self.square_size = square_size
         self.parent = parent
 
+        self.current_status = tk.StringVar()
+        self.current_status.set("White's Turn")
+        
         canvas_width = self.columns * square_size
         canvas_height = self.rows * square_size
 
@@ -47,33 +50,22 @@ class BoardGuiTk(tk.Frame):
         self.canvas.bind("<Configure>", self.refresh)
         self.canvas.bind("<Button-1>", self.click)
 
-        self.statusbar = tk.Frame(self, height=64)
-        self.button_quit = tk.Button(self.statusbar, text="New", fg="black", command=self.reset)
-        self.button_quit.pack(side=tk.LEFT, in_=self.statusbar)
+        self.statusbar = tk.Frame(self, height=128)
+        self.statusbar.grid(row=3,column=0,columnspan=2)
 
-        self.label_status = tk.Label(self.statusbar, text="   White's turn  ", fg="black")
-        self.label_status.pack(side=tk.LEFT, expand=0, in_=self.statusbar)
+        self.button_new = tk.Button(self.statusbar, text="Restart", fg="black", command=self.reset).grid(row=0,column=0)
+        #self.label_status = tk.Label(self.statusbar, text="   White's turn  ", fg="black").grid(row=0,column=1)
+        self.label_status = tk.Label(self.statusbar, textvariable=self.current_status, fg="black").grid(row=0,column=1)
 
-        self.button_quit = tk.Button(self.statusbar, text="Quit", fg="black", command=self.parent.destroy)
-        self.button_quit.pack(side=tk.RIGHT, in_=self.statusbar)
+        self.button_flip = tk.Button(self.statusbar, text="Flip Board", fg="black", command=self.flipboard).grid(row=0,column=2)
+        self.button_quit = tk.Button(self.statusbar, text="Quit", fg="black", command=self.parent.destroy).grid(row=0,column=3)
+
+        self.button_loadrep = tk.Button(self.statusbar, text="Load Repertoire", fg="black", command=self.init_repertoire).grid(row=1,column=0)
+        self.button_addtorep = tk.Button(self.statusbar, text="Add to Repertoire", fg="black", command=self.add_to_repertoire).grid(row=1,column=1)
+        self.button_checkrep = tk.Button(self.statusbar, text="Check Repertoire", fg="black", command=self.print_repertoire_info).grid(row=1,column=2)
+        self.button_saverep = tk.Button(self.statusbar, text="Save Repertoire", fg="black", command=self.save_repertoire).grid(row=1,column=3)
+
         self.statusbar.pack(expand=False, fill="x", side='bottom')
-
-        self.button_checkrep = tk.Button(self.statusbar, text="Check Repertoire", fg="black", command=self.print_repertoire_info)
-        self.button_checkrep.pack(side=tk.RIGHT, in_=self.statusbar)
-
-        self.button_loadrep = tk.Button(self.statusbar, text="Load Repertoire", fg="black", command=self.init_repertoire)
-        self.button_loadrep.pack(side=tk.LEFT, in_=self.statusbar)
-
-        self.button_addtorep = tk.Button(self.statusbar, text="Add to Repertoire", fg="black", command=self.add_to_repertoire)
-        self.button_addtorep.pack(side=tk.LEFT, in_=self.statusbar)
-
-        self.button_saverep = tk.Button(self.statusbar, text="Save Repertoire", fg="black", command=self.save_repertoire)
-        self.button_saverep.pack(side=tk.LEFT, in_=self.statusbar)
-
-        self.button_flip = tk.Button(self.statusbar, text="Flip Board", fg="black", command=self.flipboard)
-        self.button_flip.pack(side=tk.LEFT, in_=self.statusbar)
-                            
-        
         
 
     def click(self, event):
@@ -101,13 +93,14 @@ class BoardGuiTk(tk.Frame):
     def move(self, p1, p2):
         piece = self.chessboard[p1]
         dest_piece = self.chessboard[p2]
+        
         if dest_piece is None or dest_piece.color != piece.color:
             try:
                 self.chessboard.move(p1,p2)
             except board.ChessError as error:
-                self.label_status["text"] = error.__class__.__name__
+                self.current_status.set(error.__class__.__name__)
             else:
-                self.label_status["text"] = " " + piece.color.capitalize() +": "+ p1 + p2
+                self.current_status.set(" " + piece.color.capitalize() +": "+ p1 + p2)
 
 
     def hilight(self, pos):
@@ -180,6 +173,7 @@ class BoardGuiTk(tk.Frame):
 
     def flipboard(self):
         print "flip board needs to be implemented here."
+        
 
     def print_repertoire_info(self):
         repinfo = self.myrep.SearchDict(self.chessboard.export())

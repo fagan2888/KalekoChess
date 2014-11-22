@@ -10,7 +10,6 @@ if sys.version_info[0] > 2:
 #Note: environment variable doesn't persist when chess process closes, so
 #this is probably a reasonably OK thing to do
 os.environ['KALEKOCHESS_TOP_DIR']=os.path.dirname(os.path.realpath(__file__))
-print os.environ['KALEKOCHESS_TOP_DIR']
 
 from chesslib import board
 
@@ -31,9 +30,9 @@ if len(sys.argv) > 1:
         print '''Usage: game.py [OPTION]\n\n\tPlay a game of chess\n\n\tOptions:\n\t -c, --console\tplay in console mode\n\n'''
         exit(0)
 
-try:
-    from chesslib.gui_tkinter import display
-except ImportError:
-    from chesslib.gui_console import display
-finally:
-    display(game)
+#try:
+from chesslib.gui_tkinter import display
+#except ImportError:
+#    from chesslib.gui_console import display
+#finally:
+display(game)
