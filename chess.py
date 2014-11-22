@@ -9,7 +9,8 @@ if sys.version_info[0] > 2:
 #( there's probably a more "python" way to do this... )
 #Note: environment variable doesn't persist when chess process closes, so
 #this is probably a reasonably OK thing to do
-os.environ['KALEKOCHESS_TOP_DIR']=os.getcwd()
+os.environ['KALEKOCHESS_TOP_DIR']=os.path.dirname(os.path.realpath(__file__))
+print os.environ['KALEKOCHESS_TOP_DIR']
 
 from chesslib import board
 

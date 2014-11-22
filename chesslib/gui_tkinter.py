@@ -1,3 +1,5 @@
+import os
+
 import board
 import pieces
 import repertoire
@@ -161,7 +163,7 @@ class BoardGuiTk(tk.Frame):
         for coord, piece in self.chessboard.iteritems():
             x,y = self.chessboard.number_notation(coord)
             if piece is not None:
-                filename = "img/%s%s.gif" % (piece.color, piece.abbriviation.lower())
+                filename = os.environ['KALEKOCHESS_TOP_DIR']+"/img/%s%s.gif" % (piece.color, piece.abbriviation.lower())
                 piecename = "%s%s%s" % (piece.abbriviation, x, y)
 
                 if(filename not in self.icons):
@@ -181,7 +183,10 @@ class BoardGuiTk(tk.Frame):
 
     def print_repertoire_info(self):
         repinfo = self.myrep.SearchDict(self.chessboard.export())
-        print "Repertoire recommends playing %s. Comments: %s" % (repinfo[0],repinfo[1])
+        if repinfo[0] == "DNE":
+            print "Selected repertoire does not have a suggested move in this position."
+        else:
+            print "Repertoire recommends playing %s. Comments: %s" % (repinfo[0],repinfo[1])
 
     def init_repertoire(self):
         self.file_opt = options = {}
