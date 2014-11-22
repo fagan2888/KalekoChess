@@ -1,9 +1,16 @@
 import board
 import pieces
+import repertoire
 import Tkinter as tk
+import tkFileDialog as tkfd
+import tkSimpleDialog as tksd
+
 from PIL import Image, ImageTk
 
 class BoardGuiTk(tk.Frame):
+    
+    myrep = repertoire.Repertoire()
+ 
     pieces = {}
     selected = None
     selected_piece = None
@@ -42,9 +49,6 @@ class BoardGuiTk(tk.Frame):
         self.button_quit = tk.Button(self.statusbar, text="New", fg="black", command=self.reset)
         self.button_quit.pack(side=tk.LEFT, in_=self.statusbar)
 
-        self.button_save = tk.Button(self.statusbar, text="Save", fg="black", command=self.chessboard.save_to_file)
-        self.button_save.pack(side=tk.LEFT, in_=self.statusbar)
-
         self.label_status = tk.Label(self.statusbar, text="   White's turn  ", fg="black")
         self.label_status.pack(side=tk.LEFT, expand=0, in_=self.statusbar)
 
@@ -52,8 +56,17 @@ class BoardGuiTk(tk.Frame):
         self.button_quit.pack(side=tk.RIGHT, in_=self.statusbar)
         self.statusbar.pack(expand=False, fill="x", side='bottom')
 
-        self.button_checkrep = tk.Button(self.statusbar, text="Check Opening Repertoire", fg="black", command=self.chessboard._print_repertoire_info)
+        self.button_checkrep = tk.Button(self.statusbar, text="Check Repertoire", fg="black", command=self.print_repertoire_info)
         self.button_checkrep.pack(side=tk.RIGHT, in_=self.statusbar)
+
+        self.button_loadrep = tk.Button(self.statusbar, text="Load Repertoire", fg="black", command=self.init_repertoire)
+        self.button_loadrep.pack(side=tk.LEFT, in_=self.statusbar)
+
+        self.button_addtorep = tk.Button(self.statusbar, text="Add to Repertoire", fg="black", command=self.add_to_repertoire)
+        self.button_addtorep.pack(side=tk.LEFT, in_=self.statusbar)
+
+        self.button_saverep = tk.Button(self.statusbar, text="Save Repertoire", fg="black", command=self.save_repertoire)
+        self.button_saverep.pack(side=tk.LEFT, in_=self.statusbar)
 
         self.button_flip = tk.Button(self.statusbar, text="Flip Board", fg="black", command=self.flipboard)
         self.button_flip.pack(side=tk.LEFT, in_=self.statusbar)
@@ -165,6 +178,39 @@ class BoardGuiTk(tk.Frame):
 
     def flipboard(self):
         print "flip board needs to be implemented here."
+
+    def print_repertoire_info(self):
+        repinfo = self.myrep.SearchDict(self.chessboard.export())
+        print "Repertoire recommends playing %s. Comments: %s" % (repinfo[0],repinfo[1])
+
+    def init_repertoire(self):
+        self.file_opt = options = {}
+        options['defaultextension'] = '.txt'
+        options['initialdir'] = os.environ['KALEKOCHESS_TOP_DIR']+'/saved_repertoires/'
+        options['initialfile'] = 'test_rep.txt'
+        filename = tkfd.askopenfilename(**self.file_opt)
+
+        if filename:
+            self.myrep.BuildDictFromFile(filename)
+        
+    def add_to_repertoire(self):
+        print "Add to repertoire"
+
+        nextmove = tksd.askstring("Next Move","Enter next move:")
+        comments = tksd.askstring("Comments","Enter comments:")
+        self.myrep.AddToDict(self.chessboard.export(),nextmove,comments)
+        
+    def save_repertoire(self):
+        self.file_opt = options = {}
+        options['defaultextension'] = '.txt'
+        options['initialdir'] = os.environ['KALEKOCHESS_TOP_DIR']+'/saved_repertoires/'
+        options['initialfile'] = 'test_rep.txt'
+        outfname = tkfd.asksaveasfilename(**self.file_opt)
+
+        if outfname:
+            self.myrep.SaveDictToFile(filename=outfname)
+
+
 
 def display(chessboard):
     root = tk.Tk()

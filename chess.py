@@ -5,6 +5,11 @@ import sys
 if sys.version_info[0] > 2:
     print("This game runs on python 2 only")
 
+#Export current working directory as environment variable for use by modules
+#( there's probably a more "python" way to do this... )
+#Note: environment variable doesn't persist when chess process closes, so
+#this is probably a reasonably OK thing to do
+os.environ['KALEKOCHESS_TOP_DIR']=os.getcwd()
 
 from chesslib import board
 

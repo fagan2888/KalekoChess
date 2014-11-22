@@ -1,10 +1,17 @@
 * Opening repertoire database
 [DONE]  * Function to read in txt file and save to dict
 [DONE]  * Function to add to dict
-  * Function to save dict to text file
+[DONE]  * Function to save dict to text file
+	   --> note, "pickle" module can save dict object directly, to bypass
+	       having to save/read in a text file each time.
 [DONE]  * Button to grep opening repertoire and spit text out
     	     saying my suggested next move, and comments.
+[DONE]  * Button to open file dialogue to ask user to select repertoire file
   * Button to open subwindow asking to enter next move and comments, to add to opening repertoire (and save file accordingly).
 
 * Ability to flip board (ask user if he is playing white or black)
   [Button is there, need to implement functionality]
+
+
+* Make environment variable that points to top directory, then refer to it.
+  --This variable can be sourced when chess.py is executed, since chess.py can figure out where it itself lives.

@@ -4,8 +4,6 @@ from copy import deepcopy
 import pieces
 import re
 
-from opening_repertoire import dict_builder as db
-
 class ChessError(Exception): pass
 class InvalidCoord(ChessError): pass
 class InvalidColor(ChessError): pass
@@ -32,9 +30,6 @@ class Board(dict):
         * Promoting pawns
         * Fifty-move rule
     '''
-
-    repertoire = db.Repertoire()
-
 
     axis_y = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H')
     axis_x = tuple(range(1,9)) # (1,2,3,...8)
@@ -96,11 +91,6 @@ class Board(dict):
         else:
             self._do_move(p1, p2)
             self._finish_move(piece, dest, p1,p2)
-            #self._print_repertoire_info()
-
-    def _print_repertoire_info(self):
-        repinfo = self.repertoire.SearchDict(self.export())
-        print "repertoire says %s, %s" % (repinfo[0],repinfo[1])
 
     def get_enemy(self, color):
         if color == "white": return "black"
