@@ -24,13 +24,15 @@ class BoardGuiTk(tk.Frame):
 
     rows = 8
     columns = 8
-    
+
     @property
     def canvas_size(self):
         return (self.columns * self.square_size,
                 self.rows * self.square_size)
 
     def __init__(self, parent, chessboard, square_size=64):
+
+        self.isFlipped = False
 
         self.chessboard = chessboard
         self.square_size = square_size
@@ -115,12 +117,19 @@ class BoardGuiTk(tk.Frame):
         self.placepiece(name, row, column)
 
     def placepiece(self, name, row, column):
-#        print "in placepiece, FEN is %s" % self.chessboard.export()
-
+        
         '''Place a piece at the given row/column'''
         self.pieces[name] = (row, column)
         x0 = (column * self.square_size) + int(self.square_size/2)
         y0 = ((7-row) * self.square_size) + int(self.square_size/2)
+
+        #origin is upper left, positive x goes right, positive y goes down
+        #upper right black rook is x0 = 480.000000, y0 = 32.000000
+        #bottom left white rook is x0 = 32.000000, y0 = 480.000000
+        if self.isFlipped:
+            x0 = (8*self.square_size)-x0
+            y0 = (8*self.square_size)-y0
+
         self.canvas.coords(name, x0, y0)
 
     def refresh(self, event={}):
@@ -172,7 +181,9 @@ class BoardGuiTk(tk.Frame):
         self.refresh()
 
     def flipboard(self):
-        print "flip board needs to be implemented here."
+        self.isFlipped = not self.isFlipped            
+        self.refresh()
+
         
 
     def print_repertoire_info(self):
