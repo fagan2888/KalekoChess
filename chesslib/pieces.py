@@ -160,6 +160,23 @@ class Queen(Piece):
 class King(Piece):
     abbriviation = 'k'
     move_length = 1
+  
     def possible_moves(self,position):
+        board = self.board
         position = position.upper()
-        return super(King, self).possible_moves(position, True, True, 1)
+
+        result = super(King, self).possible_moves(position, True, True, 1)
+
+        #Add castling moves to result, if applicable
+        if self.color == 'white':
+            if board.can_castle_kingside(self.color):
+                result.append('G1')
+            if board.can_castle_queenside(self.color):
+                result.append('C1')
+        if self.color == 'black':
+            if board.can_castle_kingside(self.color):
+                result.append('G8')
+            if board.can_castle_queenside(self.color):
+                result.append('C8')
+
+        return result

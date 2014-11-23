@@ -7,11 +7,14 @@
 [DONE]  * Button to grep opening repertoire and spit text out
     	     saying my suggested next move, and comments.
 [DONE]  * Button to open file dialogue to ask user to select repertoire file
-  * Button to open subwindow asking to enter next move and comments, to add to opening repertoire (and save file accordingly).
+[DONE]  * Button to open subwindow asking to enter next move and comments, to add to opening repertoire (and save file accordingly).
 
 * Ability to flip board (ask user if he is playing white or black)
   [Button is there, need to implement functionality]
 
+* Moves: (in order of importance):
+[DONE] 	 * Castling
+	 * En Passant
+	 * Pawn promotion
 
-* Make environment variable that points to top directory, then refer to it.
-  --This variable can be sourced when chess.py is executed, since chess.py can figure out where it itself lives.
+[DONE] * Make an (internal) environment variable that points to top directory, then refer to it.

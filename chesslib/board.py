@@ -36,11 +36,14 @@ class Board(dict):
 
     captured_pieces = { 'white': [], 'black': [] }
     player_turn = None
+
+    #castling availability. If neither side can castle, this is "-". Otherwise, this has one or more letters: "K" (White can castle kingside), "Q" (White can castle queenside), "k" (Black can castle kingside), and/or "q" (Black can castle queenside).
     castling = '-'
     en_passant = '-'
     halfmove_clock = 0
     fullmove_number = 1
     history = []
+    is_flipped = False
 
     def __init__(self, fen = None):
         if fen is None: self.load(FEN_STARTING)
@@ -62,19 +65,23 @@ class Board(dict):
     def is_in_check_after_move(self, p1, p2):
         # Create a temporary board
         tmp = deepcopy(self)
-        tmp._do_move(p1,p2)
+        tmp._do_move(p1,p2,False,False)
         return tmp.is_in_check(self[p1].color)
 
     def move(self, p1, p2):
         p1, p2 = p1.upper(), p2.upper()
         piece = self[p1]
         dest  = self[p2]
+        is_castling_kingside = False
+        is_castling_queenside = False
+
 
         if self.player_turn != piece.color:
             raise NotYourTurn("Not " + piece.color + "'s turn!")
 
         enemy = self.get_enemy(piece.color)
         possible_moves = piece.possible_moves(p1)
+
         # 0. Check if p2 is in the possible moves
         if p2 not in possible_moves:
             raise InvalidMove
@@ -84,26 +91,50 @@ class Board(dict):
             if self.is_in_check_after_move(p1,p2):
                 raise Check
 
+        #Check if it's castling
+        if piece.color == 'white' and p1 == 'E1' and p2 == 'G1':
+            is_castling_kingside = True
+        if piece.color == 'black' and p1 == 'E8' and p2 == 'G8':
+            is_castling_kingside = True
+        if piece.color == 'white' and p1 == 'E1' and p2 == 'C1':
+            is_castling_queenside = True
+        if piece.color == 'black' and p1 == 'E8' and p2 == 'C8':
+            is_castling_queenside = True
+            
         if not possible_moves and self.is_in_check(piece.color):
             raise CheckMate
         elif not possible_moves:
             raise Draw
         else:
-            self._do_move(p1, p2)
+            self._do_move(p1, p2, is_castling_kingside, is_castling_queenside)
             self._finish_move(piece, dest, p1,p2)
 
     def get_enemy(self, color):
         if color == "white": return "black"
         else: return "white"
 
-    def _do_move(self, p1, p2):
+    def _do_move(self, p1, p2, is_castling_kingside, is_castling_queenside):
         '''
             Move a piece without validation
         '''
         piece = self[p1]
         dest  = self[p2]
+        
         del self[p1]
         self[p2] = piece
+        
+        #if is_castling_kingside, move the rook too
+        if is_castling_kingside:
+            if piece.color == 'white':
+                self._do_move('H1','F1',False,False)
+            if piece.color == 'black':
+                self._do_move('H8','F8',False,False)
+        if is_castling_queenside:
+            if piece.color == 'white':
+                self._do_move('A1','D1',False,False)
+            if piece.color == 'black':
+                self._do_move('A8','D8',False,False)
+        
 
     def _finish_move(self, piece, dest, p1, p2):
         '''
@@ -244,9 +275,94 @@ class Board(dict):
 
         result = result[:-1] # remove trailing "/"
         result = replace_spaces(result)
+
+        #check if castling is ok
+        self.update_castling()
+
         result += " " + (" ".join([self.player_turn[0],
                          self.castling,
                          self.en_passant,
                          str(self.halfmove_clock),
                          str(self.fullmove_number)]))
         return result
+
+    def can_castle_kingside(self, color):
+        if(color not in ("black", "white")): raise InvalidColor
+
+        #Is the king not on his home square?
+        if color == "white" and self.get_king_position(color) != "E1":
+            return False
+        if color == "black" and self.get_king_position(color) != "E8":
+            return False
+        
+        #Is the rook not still on his home square?
+        #IMPLEMENT THIS
+        
+        #Are there any pieces (of any color) blocking the castling squares?
+        blocked = self.occupied('white') + self.occupied('black')
+        if color == "white" and 'F1' in blocked:
+            return False
+        if color == "white" and 'G1' in blocked:
+            return False
+        if color == "black" and 'F8' in blocked:
+            return False
+        if color == "black" and 'G8' in blocked:
+            return False
+
+        #Are any of the castling squares controlled by the enemy?
+        #IMPLEMENT THIS
+
+        #Has the king moved, or has the rook moved
+        #IMPLEMENT THIS
+
+        return True
+
+
+    def can_castle_queenside(self, color):
+
+        if(color not in ("black", "white")): raise InvalidColor
+
+        #Is the king not on his home square?
+        if color == "white" and self.get_king_position(color) != "E1":
+            return False
+        if color == "black" and self.get_king_position(color) != "E8":
+            return False
+        
+        #Is the rook not still on his home square?
+        #IMPLEMENT THIS
+        
+        #Are there any pieces (of any color) blocking the castling squares?
+        blocked = self.occupied('white') + self.occupied('black')
+        if color == "white" and 'B1' in blocked:
+            return False
+        if color == "white" and 'C1' in blocked:
+            return False
+        if color == "white" and 'D1' in blocked:
+            return False
+        if color == "black" and 'B8' in blocked:
+            return False
+        if color == "black" and 'C8' in blocked:
+            return False
+        if color == "black" and 'D8' in blocked:
+            return False
+
+        #Are any of the castling squares controlled by the enemy?
+        #IMPLEMENT THIS
+
+        #Has the king moved, or has the rook moved
+        #IMPLEMENT THIS
+
+        return True
+
+    def update_castling(self):
+
+        self.castling = ""
+        if self.can_castle_kingside('white'):
+            self.castling = self.castling + "K"
+        if self.can_castle_queenside('white'):
+            self.castling = self.castling + "Q"
+        if self.can_castle_kingside('black'):
+            self.castling = self.castling + "k"
+        if self.can_castle_queenside('black'):
+            self.castling = self.castling + "q"
+
