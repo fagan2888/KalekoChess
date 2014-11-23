@@ -22,3 +22,5 @@
 [DONE] * Make an (internal) environment variable that points to top directory, then refer to it.
 
 * Test to make sure FEN exporting works fine when board is flipped, etc. Also make sure castling string is working in export. Plug in to third-party FEN string reader website to check, maybe?
+
+* Ability to "undo" a move and go back one. Is this possible from just one FEN string?
