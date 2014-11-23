@@ -71,16 +71,14 @@ class BoardGuiTk(tk.Frame):
         
 
     def click(self, event):
-
         # Figure out which square we've clicked
         col_size = row_size = event.widget.master.square_size
 
         current_column = event.x / col_size
         current_row = 7 - (event.y / row_size)
-
         position = self.chessboard.letter_notation((current_row, current_column))
         piece = self.chessboard[position]
-
+        
         if self.selected_piece:
             self.move(self.selected_piece[1], position)
             self.selected_piece = None
@@ -110,11 +108,11 @@ class BoardGuiTk(tk.Frame):
         if piece is not None and (piece.color == self.chessboard.player_turn):
             self.selected_piece = (self.chessboard[pos], pos)
             self.hilighted = map(self.chessboard.number_notation, (self.chessboard[pos].possible_moves(pos)))
-
+     
     def addpiece(self, name, image, row=0, column=0):
         '''Add a piece to the playing board'''
         self.canvas.create_image(0,0, image=image, tags=(name, "piece"), anchor="c")
-        self.placepiece(name, row, column)
+#        self.placepiece(name, row, column)
 
     def placepiece(self, name, row, column):
         
@@ -124,8 +122,6 @@ class BoardGuiTk(tk.Frame):
         y0 = ((7-row) * self.square_size) + int(self.square_size/2)
 
         #origin is upper left, positive x goes right, positive y goes down
-        #upper right black rook is x0 = 480.000000, y0 = 32.000000
-        #bottom left white rook is x0 = 32.000000, y0 = 480.000000
         if self.isFlipped:
             x0 = (8*self.square_size)-x0
             y0 = (8*self.square_size)-y0
@@ -181,8 +177,10 @@ class BoardGuiTk(tk.Frame):
         self.refresh()
 
     def flipboard(self):
+        self.hilighted = None
         self.isFlipped = not self.isFlipped            
         self.refresh()
+        self.chessboard.set_isflipped(self.isFlipped)
 
         
 
@@ -204,7 +202,6 @@ class BoardGuiTk(tk.Frame):
             self.myrep.BuildDictFromFile(filename)
         
     def add_to_repertoire(self):
-        print "Add to repertoire"
 
         nextmove = tksd.askstring("Next Move","Enter next move:")
         comments = tksd.askstring("Comments","Enter comments:")

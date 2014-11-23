@@ -43,7 +43,7 @@ class Board(dict):
     halfmove_clock = 0
     fullmove_number = 1
     history = []
-    is_flipped = False
+    isFlipped = False
 
     def __init__(self, fen = None):
         if fen is None: self.load(FEN_STARTING)
@@ -81,6 +81,11 @@ class Board(dict):
 
         enemy = self.get_enemy(piece.color)
         possible_moves = piece.possible_moves(p1)
+        
+        #if board is flipped, flip all possible moves
+        if self.isFlipped:
+            for x in xrange(len(possible_moves)):
+                possible_moves[x]=self.flip_coord(possible_moves[x])
 
         # 0. Check if p2 is in the possible moves
         if p2 not in possible_moves:
@@ -168,11 +173,21 @@ class Board(dict):
             Return a list of `color`'s possible moves.
             Does not check for check.
         '''
+
         if(color not in ("black", "white")): raise InvalidColor
         result = []
         for coord in self.keys():
+            #if flipped, flip coord:
+            if self.isFlipped:
+                coord = self.flip_coord(coord)
+            
             if (self[coord] is not None) and self[coord].color == color:
                 moves = self[coord].possible_moves(coord)
+                #if board is flipped, flip all possible moves
+                if self.isFlipped:
+                    for x in xrange(len(moves)):
+                        moves[x]=self.flip_coord(moves[x])
+
                 if moves: result += moves
         return result
 
@@ -184,6 +199,10 @@ class Board(dict):
         if(color not in ("black", "white")): raise InvalidColor
 
         for coord in self:
+            #if board is flipped, flip coord
+#            if self.isFlipped:
+#                coord=self.flip_coord(coord)
+            
             if self[coord].color == color:
                 result.append(coord)
         return result
@@ -209,14 +228,26 @@ class Board(dict):
 
     def letter_notation(self,coord):
         if not self.is_in_bounds(coord): return
+        
+        result = self.axis_y[coord[1]] + str(self.axis_x[coord[0]])
         try:
-            return self.axis_y[coord[1]] + str(self.axis_x[coord[0]])
+            if not self.isFlipped:
+                return result
+            else:
+                return self.flip_coord(result)
+        except IndexError:
+            raise InvalidCoord
+
+    def letter_notation_flip_independent(self,coord):
+        if not self.is_in_bounds(coord): return
+        try:
+                return self.axis_y[coord[1]] + str(self.axis_x[coord[0]])
         except IndexError:
             raise InvalidCoord
 
     def number_notation(self, coord):
         return int(coord[1])-1, self.axis_y.index(coord[0])
-
+        
     def is_in_bounds(self, coord):
         if coord[1] < 0 or coord[1] > 7 or\
            coord[0] < 0 or coord[0] > 7:
@@ -366,3 +397,8 @@ class Board(dict):
         if self.can_castle_queenside('black'):
             self.castling = self.castling + "q"
 
+    def set_isflipped(self,isflipped):
+        self.isFlipped = isflipped
+
+    def flip_coord(self,coord):
+        return self.axis_y[7-self.axis_y.index(coord[0])]+str(self.axis_x[8-int(coord[1])])
