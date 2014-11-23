@@ -9,8 +9,7 @@
 [DONE]  * Button to open file dialogue to ask user to select repertoire file
 [DONE]  * Button to open subwindow asking to enter next move and comments, to add to opening repertoire (and save file accordingly).
 
-* Ability to flip board (ask user if he is playing white or black)
-  [Button is there, need to implement functionality]
+[DONE]  * Ability to flip board (ask user if he is playing white or black)
 
 * Moves: (in order of importance):
 [DONE] 	 * Castling
@@ -18,3 +17,5 @@
 	 * Pawn promotion
 
 [DONE] * Make an (internal) environment variable that points to top directory, then refer to it.
+
+* Test to make sure FEN exporting works fine when board is flipped, etc. Also make sure castling string is working in export. Plug in to third-party FEN string reader website to check, maybe?
