@@ -38,7 +38,7 @@ class Board(dict):
     player_turn = None
 
     #castling availability. If neither side can castle, this is "-". Otherwise, this has one or more letters: "K" (White can castle kingside), "Q" (White can castle queenside), "k" (Black can castle kingside), and/or "q" (Black can castle queenside).
-    castling = '-'
+    castling = 'KQkq'
     en_passant = '-'
     halfmove_clock = 0
     fullmove_number = 1
@@ -387,15 +387,27 @@ class Board(dict):
 
     def update_castling(self):
 
-        self.castling = ""
-        if self.can_castle_kingside('white'):
-            self.castling = self.castling + "K"
-        if self.can_castle_queenside('white'):
-            self.castling = self.castling + "Q"
-        if self.can_castle_kingside('black'):
-            self.castling = self.castling + "k"
-        if self.can_castle_queenside('black'):
-            self.castling = self.castling + "q"
+    #apparently, in FEN strings, the starting position has KQkq
+    #meaning both sides can castle both ways
+    #even though in that precise position, neither is possible
+    #this function should be implemented like...
+    #if white's H1 rook has moved, "K" is no longer in castling string
+    #if white's king has moved, "KQ" are both no longer in castling string
+    #etc.
+
+    #this is wrong:
+#        self.castling = ""
+#        if self.can_castle_kingside('white'):
+#            self.castling = self.castling + "K"
+#        if self.can_castle_queenside('white'):
+#            self.castling = self.castling + "Q"
+#        if self.can_castle_kingside('black'):
+#            self.castling = self.castling + "k"
+#        if self.can_castle_queenside('black'):
+#            self.castling = self.castling + "q"
+
+        #for now, just always assume castling is a possibility
+        self.castling = 'KQkq'
 
     def set_isflipped(self,isflipped):
         self.isFlipped = isflipped
