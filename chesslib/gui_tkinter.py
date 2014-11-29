@@ -217,8 +217,10 @@ class BoardGuiTk(tk.Frame):
     def save_repertoire(self):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
-        options['initialdir'] = os.environ['KALEKOCHESS_TOP_DIR']+'/saved_repertoires/'
-        options['initialfile'] = 'test_rep.txt'
+        #initialdir should be the directory you loaded the repertoire from
+        options['initialdir'] = self.myrep.loaded_rep_filepath
+        #initialfile should be the file you loaded initially
+        options['initialfile'] = self.myrep.loaded_rep_filename
         outfname = tkfd.asksaveasfilename(**self.file_opt)
 
         if outfname:

@@ -19,6 +19,11 @@ class Repertoire():
 
     #Repertoire dictionary:
     #Key is FEN string, element is tuple that holds (the next move, the comments)
+
+    #Default file names and paths (overwritten when a repertoire is loaded)
+    loaded_rep_filename = 'test_rep.txt'
+    loaded_rep_filepath = os.environ['KALEKOCHESS_TOP_DIR']+'/saved_repertoires/'
+
     def __init__(self):
         self.hasLoadedDict = False
         #self.BuildDictFromFile(self)
@@ -52,6 +57,10 @@ class Repertoire():
                 content = f.readlines()
         except IOError:
             print "Repertoire file %s does not exist." % filename
+
+        self.loaded_rep_filename = os.path.basename(filename)
+        self.loaded_rep_filepath = os.path.dirname(filename)
+
         #Loop through the lines of the file (already read in) and 
         #add them to the dictionary
         for line in content:
