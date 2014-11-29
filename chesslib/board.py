@@ -4,6 +4,9 @@ from copy import deepcopy
 import pieces
 import re
 
+import movelogger
+
+
 class ChessError(Exception): pass
 class InvalidCoord(ChessError): pass
 class InvalidColor(ChessError): pass
@@ -15,6 +18,7 @@ class NotYourTurn(ChessError): pass
 
 FEN_STARTING = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 RANK_REGEX = re.compile(r"^[A-Z][1-8]$")
+
 
 class Board(dict):
     '''
@@ -44,6 +48,10 @@ class Board(dict):
     fullmove_number = 1
     history = []
     isFlipped = False
+
+    #move logger (global?)
+    mlog = movelogger.MoveLogger()
+
 
     def __init__(self, fen = None):
         if fen is None: self.load(FEN_STARTING)
@@ -113,6 +121,9 @@ class Board(dict):
         else:
             self._do_move(p1, p2, is_castling_kingside, is_castling_queenside)
             self._finish_move(piece, dest, p1,p2)
+            #add move to move logger
+            self.mlog.AddMove(self.export())
+            
 
     def get_enemy(self, color):
         if color == "white": return "black"
@@ -414,3 +425,6 @@ class Board(dict):
 
     def flip_coord(self,coord):
         return self.axis_y[7-self.axis_y.index(coord[0])]+str(self.axis_x[8-int(coord[1])])
+
+    def get_lastmove(self):
+        return self.mlog.LastMove()

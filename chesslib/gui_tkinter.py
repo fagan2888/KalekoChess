@@ -60,12 +60,14 @@ class BoardGuiTk(tk.Frame):
         self.label_status = tk.Label(self.statusbar, textvariable=self.current_status, fg="black").grid(row=0,column=1)
 
         self.button_flip = tk.Button(self.statusbar, text="Flip Board", fg="black", command=self.flipboard).grid(row=0,column=2)
-        self.button_quit = tk.Button(self.statusbar, text="Quit", fg="black", command=self.parent.destroy).grid(row=0,column=3)
+        self.button_flip = tk.Button(self.statusbar, text="Last Move", fg="black", command=self.loadlastmove).grid(row=0,column=3)
+        self.button_quit = tk.Button(self.statusbar, text="Quit", fg="black", command=self.parent.destroy).grid(row=0,column=4)
 
+        
         self.button_loadrep = tk.Button(self.statusbar, text="Load Repertoire", fg="black", command=self.init_repertoire).grid(row=1,column=0)
-        self.button_addtorep = tk.Button(self.statusbar, text="Add to Repertoire", fg="black", command=self.add_to_repertoire).grid(row=1,column=1)
-        self.button_checkrep = tk.Button(self.statusbar, text="Check Repertoire", fg="black", command=self.print_repertoire_info).grid(row=1,column=2)
-        self.button_saverep = tk.Button(self.statusbar, text="Save Repertoire", fg="black", command=self.save_repertoire).grid(row=1,column=3)
+        self.button_addtorep = tk.Button(self.statusbar, text="Add to Rep", fg="black", command=self.add_to_repertoire).grid(row=1,column=1)
+        self.button_checkrep = tk.Button(self.statusbar, text="Check Rep", fg="black", command=self.print_repertoire_info).grid(row=1,column=2)
+        self.button_saverep = tk.Button(self.statusbar, text="Save Rep", fg="black", command=self.save_repertoire).grid(row=1,column=3)
 
         self.statusbar.pack(expand=False, fill="x", side='bottom')
         
@@ -182,6 +184,11 @@ class BoardGuiTk(tk.Frame):
         self.refresh()
         self.chessboard.set_isflipped(self.isFlipped)
 
+    def loadlastmove(self):
+        self.chessboard.load(self.chessboard.get_lastmove())
+        self.refresh()
+        self.draw_pieces()
+        self.refresh()
         
 
     def print_repertoire_info(self):
