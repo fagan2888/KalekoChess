@@ -12,13 +12,22 @@
 
 import os
 
-#Here's the repertoire dictionary (global)
-repertoire = {}
+#Custom exception class
+class RepertoireException(Exception):
+    def __init__(self,value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 
 class Repertoire():
 
     #Repertoire dictionary:
     #Key is FEN string, element is tuple that holds (the next move, the comments)
+    #Here's the repertoire dictionary
+    repertoire = {}
+
+
 
     #Default file names and paths (overwritten when a repertoire is loaded)
     loaded_rep_filename = 'test_rep.txt'
@@ -27,7 +36,7 @@ class Repertoire():
     def __init__(self):
         self.hasLoadedDict = False
         #self.BuildDictFromFile(self)
-        #self.PrintDict(repertoire)
+        #self.PrintDict(self.repertoire)
 
     def SearchDict(self,fenstring):
 #        print "DEBUG: Searching dictionary for ",fenstring        
@@ -35,18 +44,23 @@ class Repertoire():
             print "WARNING! You're searching through a repertoire that hasn't been loaded from a file. Try using the \"Load Repertoire\" button."
 
         default = ("DNE","DNE")
-        return repertoire.get(fenstring,default)
+        return self.repertoire.get(fenstring,default)
 
-    def AddToDict(self, fenstring, move, comments):
-        #Check if this fenstring already exists
-        if fenstring in repertoire:
-            print "UH OH ALREADY IN REPERTOIRE"
+    def AddToDict(self, fenstring, move, comments, forceoverwrite=False):
+
+        if not forceoverwrite:            
+            #Check if this fenstring already exists
+            if fenstring in self.repertoire:
+                raise RepertoireException("This position is already stored in the loaded repertoire.")
+            else:
+                self.repertoire[fenstring]=(move,comments)
+                
         else:
-            repertoire[fenstring]=(move,comments)
+            self.repertoire[fenstring]=(move,comments)
 
     def PrintDict(self):
         print "\n----- PRINTING REPERTOIRE DICTIONARY -----\n"
-        for key in repertoire.keys():
+        for key in self.repertoire.keys():
             print "Dictionary['%s'] = %s" % (key,dictionary[key])
         print "\n------------------------------------------\n"
     
@@ -73,11 +87,11 @@ class Repertoire():
         
         self.hasLoadedDict = True
 
-        return repertoire
+        return self.repertoire
 
     def SaveDictToFile(self,filename):
         outf = open(filename,'w')
-        for k in repertoire:
-            outf.write("%s|%s|%s\n"%(k,repertoire[k][0],repertoire[k][1]))
+        for k in self.repertoire:
+            outf.write("%s|%s|%s\n"%(k,self.repertoire[k][0],self.repertoire[k][1]))
         outf.close()
 

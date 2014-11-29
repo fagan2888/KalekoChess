@@ -6,6 +6,7 @@ import repertoire
 import Tkinter as tk
 import tkFileDialog as tkfd
 import tkSimpleDialog as tksd
+import tkMessageBox as tkmb
 
 from PIL import Image, ImageTk
 
@@ -212,8 +213,15 @@ class BoardGuiTk(tk.Frame):
 
         nextmove = tksd.askstring("Next Move","Enter next move:")
         comments = tksd.askstring("Comments","Enter comments:")
-        self.myrep.AddToDict(self.chessboard.export(),nextmove,comments)
-        
+        try:
+            self.myrep.AddToDict(self.chessboard.export(),nextmove,comments)
+        except repertoire.RepertoireException as e:
+            print 'Exception! ', e.value
+            tkmb_result = tkmb.askquestion('Warning!','Do you want to overwrite this position in your repertoire?',icon='warning')
+            print "tkmb_result is ",tkmb_result
+            if tkmb_result == 'yes':
+                self.myrep.AddToDict(self.chessboard.export(),nextmove,comments,forceoverwrite=True)
+            
     def save_repertoire(self):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
